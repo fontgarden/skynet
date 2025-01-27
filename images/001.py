@@ -1,6 +1,7 @@
 import math
 import argparse
 import drawBot as db
+import random
 #import pytweening as pt
 from fontTools.ttLib import TTFont
 from datetime import datetime
@@ -12,7 +13,7 @@ MAIN_FONT_PATH = "fonts/SkynetGroteskVF.ttf"
 MAIN_TEXT_OPSZ = 144
 CURRENT_DATE = datetime.now()
 FORMATTED_DATE = CURRENT_DATE.strftime("%d-%m-%Y")
-GRID_VIEW = True
+GRID_VIEW = False
 
 
 # Handel the "--output" flag
@@ -124,6 +125,32 @@ db.fontSize(128+32+16-4)
 # db.text("skynet was closed-source",   (M,       M+(U*(TOP_ROW-v*2))), align="left")
 # db.text("skynet was closed-source",   (M,       M+(U*(TOP_ROW-v*1))), align="left")
 
+
+# Generate 32 random points within margins
+num_points = 8
+# Calculate vertical range for upper 3/4 (from top to 75% height)
+new_y_max = M + (H - 2*M) * 0.75  # 75% from top of margin area
+points = [(random.uniform(M, W-M), random.uniform(M, new_y_max)) for _ in range(num_points)]
+
+# Draw connecting lines between all points
+db.stroke(0.9)
+db.strokeWidth(2)
+for i in range(len(points)):
+    for j in range(i+1, len(points)):
+        db.line((points[i][0], points[i][1]), (points[j][0], points[j][1]))
+
+# Draw circles at each point
+db.fill(0.9)
+db.stroke(None)
+for x, y in points:
+    db.oval(x-20, y-20, 40, 40)  # 20px diameter circles
+
+db.stroke(None)
+db.tracking(None)
+db.fill(0.9)
+db.fontSize(256+64)
+db.text("skynet was",      (M+13, M+(U*(TOP_ROW-4.6))),  align="left")
+db.text("closed source", (M, M+(U*(TOP_ROW-9))),  align="left")
 
 db.saveImage(args.output)
 print("DrawBot: Done\n")
